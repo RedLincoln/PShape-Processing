@@ -34,24 +34,35 @@ PVector rotatePoint(PVector point){
   return result;
 }
 
+List<PVector> rotateLine(){
+  List<PVector> rotated = new ArrayList();
+  for (int i = 0; i < points.size(); i++){
+    PVector v = points.get(i);
+    rotated.add(rotatePoint(v));
+  }
+  return rotated;
+}
+
+
+void addVertex(List<PVector> rotated){
+  object3D.vertex(rotated.get(0).x, rotated.get(0).y, rotated.get(0).z);
+  for (int i = 0; i < rotated.size() - 1; i++){
+    object3D.vertex(points.get(i).x, points.get(i).y, points.get(i).z);
+    object3D.vertex(rotated.get(i + 1).x, rotated.get(i + 1).y, rotated.get(i + 1).z);
+  }
+  PVector v = points.get(points.size() - 1);
+  object3D.vertex(v.x, v.y, v.z);
+} 
+
+
 void makeShape(){
   object3D = createShape();
   object3D.beginShape(TRIANGLE_STRIP);
   object3D.stroke(255, 0, 0);
   double angle = 0;
   while (angle < 360){
-    List<PVector> rotated = new ArrayList();
-    for (int i = 0; i < points.size(); i++){
-      PVector v = points.get(i);
-      rotated.add(rotatePoint(v));
-    }
-    object3D.vertex(rotated.get(0).x, rotated.get(0).y, rotated.get(0).z);
-    for (int i = 0; i < rotated.size() - 1; i++){
-      object3D.vertex(points.get(i).x, points.get(i).y, points.get(i).z);
-      object3D.vertex(rotated.get(i + 1).x, rotated.get(i + 1).y, rotated.get(i + 1).z);
-    }
-    PVector v = points.get(points.size() - 1);
-    object3D.vertex(v.x, v.y, v.z);
+    List<PVector> rotated = rotateLine();
+    addVertex(rotated);
     points = rotated;
     angle += rotAngle;
   }
