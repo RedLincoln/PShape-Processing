@@ -9,33 +9,42 @@ enum State {
 
 
 Button dimensionToggleButton;
+Button clearButton;
+
 State state = State.P2D;
 int xPos, yPos;
 List<PVector> points = new ArrayList();
 PShape object3D; 
 int separatorX;
+int foregroundColor = #ffffff;
+int backgroundColor = #000000;
 
 void setup(){
   size(1200, 800, P3D);
   separatorX = width / 2;
   dimensionToggleButton = initButton("2D", 60, 40, 80, 40);
+  clearButton = initButton("Clear", 160, 40, 80, 40);
   xPos = width / 2;
   yPos = 0;
 }
 
 
 void draw(){
-  background(0, 0, 0);
+  background(backgroundColor);
   dimensionToggleButton.draw();
   stroke(255, 255, 255);
   if (state == State.P2D){
+    clearButton.draw();
     drawMiddle();
     drawLine();
   }else if (state == State.P3D && object3D != null){
-    println(xPos);
     translate(xPos, yPos);
     shape(object3D);
   }
+}
+
+boolean haveFigure(){
+  return points != null && !points.isEmpty();
 }
 
 Button initButton(String text, int x, int y, int w, int h){
@@ -98,15 +107,25 @@ void makeShape(){
 }
 
 void drawLine(){
-  if (points.isEmpty()) return;
+  if (!haveFigure()) return;  
+  noSmooth();
+  strokeWeight(3);
+  point(separatorX + points.get(0).x, points.get(0).y, 0);
   for(int i = 0; i < points.size() - 1; i++){
+    
     line(separatorX + points.get(i).x, points.get(i).y, separatorX + points.get(i + 1).x, points.get(i + 1).y);
   }
+  strokeWeight(1);
 }
+
+
+
 
 void mouseClicked(){
   if (dimensionToggleButton.isMouseOver()){
     dimensionControl();
+  }else if (clearButton.isMouseOver() && state == State.P2D){
+    points.clear();
   }else if (mouseButton == LEFT){
     if (mouseX >= width / 2){
       points.add(new PVector(mouseX - separatorX, mouseY, 0));
@@ -135,4 +154,5 @@ void mouseDragged(){
 
 void mouseMoved(){
   dimensionToggleButton.mouseOver();
+  clearButton.mouseOver();
 }
