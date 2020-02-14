@@ -2,30 +2,47 @@ import java.util.List;
 import java.util.ArrayList;
 
 double rotAngle = 30;
+
 enum State {
   P2D,
   P3D;
 }
 
+enum Movement {
+  translate, 
+  rotate;
+}
 
 Button dimensionToggleButton;
 Button clearButton;
-
+Button translateButton;
+Button rotateButton;
+Movement movement = Movement.translate;
+boolean rotateX = true;
+int optionTimes = 0;
 State state = State.P2D;
+float rotationRatio = 0.1;
 int xPos, yPos;
 List<PVector> points = new ArrayList();
 PShape object3D; 
 int separatorX;
+int separatorY;
 int foregroundColor = #ffffff;
 int backgroundColor = #000000;
+int startX = 0;
+int startY = 0;
 
 void setup(){
   size(1200, 800, P3D);
   separatorX = width / 2;
+  separatorY = height / 2;
   dimensionToggleButton = initButton("2D", 60, 40, 80, 40);
   clearButton = initButton("Clear", 160, 40, 80, 40);
+  translateButton = initButton("Translate", 80, 100, 120, 40);
+  translateButton.selected(true);
+  rotateButton = initButton("Rotate-X", 220, 100, 120, 40);
   xPos = width / 2;
-  yPos = 0;
+  yPos = height / 2;
 }
 
 
@@ -37,11 +54,14 @@ void draw(){
     clearButton.draw();
     drawMiddle();
     drawLine();
-  }else if (state == State.P3D && object3D != null){
-    translate(xPos, yPos);
+  }else if (state == State.P3D){
+    translateButton.draw();
+    rotateButton.draw();
+    translate(xPos, yPos);      
     shape(object3D);
   }
 }
+
 
 boolean haveFigure(){
   return points != null && !points.isEmpty();
@@ -108,12 +128,10 @@ void makeShape(){
 
 void drawLine(){
   if (!haveFigure()) return;  
-  noSmooth();
   strokeWeight(3);
-  point(separatorX + points.get(0).x, points.get(0).y, 0);
-  for(int i = 0; i < points.size() - 1; i++){
-    
-    line(separatorX + points.get(i).x, points.get(i).y, separatorX + points.get(i + 1).x, points.get(i + 1).y);
+  point(separatorX + points.get(0).x, separatorY + points.get(0).y, 0);
+  for(int i = 0; i < points.size() - 1; i++){    
+    line(separatorX + points.get(i).x, separatorY + points.get(i).y, separatorX + points.get(i + 1).x, separatorY + points.get(i + 1).y);
   }
   strokeWeight(1);
 }
@@ -123,13 +141,42 @@ void drawLine(){
 
 void mouseClicked(){
   if (dimensionToggleButton.isMouseOver()){
-    dimensionControl();
-  }else if (clearButton.isMouseOver() && state == State.P2D){
+    if (haveFigure()){
+      dimensionControl();
+    }
+  }else if (state == State.P2D && clearButton.isMouseOver()){
     points.clear();
+  }else if (state == State.P3D){
+    if(translateButton.isMouseOver()){
+      translateButton.selected(true);
+      rotateButton.selected(false);
+      movement = Movement.translate;
+    }else if (rotateButton.isMouseOver()){
+      translateButton.selected(false);
+      rotateControl();
+    }
+    if (movement == Movement.rotate){
+      startX = mouseX;
+      startY = mouseY;
+    }
   }else if (mouseButton == LEFT){
     if (mouseX >= width / 2){
-      points.add(new PVector(mouseX - separatorX, mouseY, 0));
+      points.add(new PVector(mouseX - separatorX, mouseY - separatorY, 0));
     }
+  }
+}
+
+void rotateControl(){
+  rotateButton.selected(true);
+  if (movement != Movement.rotate){
+    movement = Movement.rotate;
+    return;
+  }
+  rotateX = !rotateX;
+  if (rotateX){
+    rotateButton.changeText("Rotate-X");
+  }else{
+    rotateButton.changeText("Rotate-Y");
   }
 }
 
@@ -147,12 +194,32 @@ void dimensionControl(){
 
 void mouseDragged(){
   if (state == State.P3D){
-    xPos = mouseX;
-    yPos = mouseY - height / 2;
+    if (movement == Movement.translate){
+      xPos = mouseX;
+      yPos = mouseY;
+    }else if (movement == Movement.rotate){
+      if (rotateX){
+        if (mouseX < startX){
+          object3D.rotate(-rotationRatio, 0, 1, 0);
+        }else if (mouseX > startX){
+          object3D.rotate(rotationRatio, 0, 1, 0);
+        }
+      }else{
+        if (mouseY < startY){
+          object3D.rotateX(-rotationRatio);      
+        }else if(mouseY > startY){
+          object3D.rotateX(rotationRatio);
+        }
+      }
+      startX = mouseX;
+      startY = mouseY;
+    }
   }
 }
 
 void mouseMoved(){
   dimensionToggleButton.mouseOver();
   clearButton.mouseOver();
+  translateButton.mouseOver();
+  rotateButton.mouseOver();
 }

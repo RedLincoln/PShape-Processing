@@ -2,8 +2,10 @@ class Button {
   int x, y, w, h, fontSize = 12;
   String text;
   int buttonOffset = 2;
-  int background = #C0C0C0;
   int foreground = #ffffff;
+  int unSelectedColor = #C0C0C0;
+  int background = unSelectedColor;
+  int selectedColor = #28a745;
   float baseAlpha = 128;
   float overAlpha = 255;
   float alpha = 128;
@@ -32,6 +34,13 @@ class Button {
     textSize(fontSize);
     textAlign(CENTER);
     text(text, x, y + 7.5);
+  }
+  
+  public void selected(boolean selected){
+    if (selected)
+      background = selectedColor;
+    else
+      background = unSelectedColor; 
   }
   
   public void mouseOver(){
