@@ -10,6 +10,7 @@ enum State {
 
 Button dimensionToggleButton;
 State state = State.P2D;
+int xPos, yPos;
 List<PVector> points = new ArrayList();
 PShape object3D; 
 int separatorX;
@@ -18,6 +19,8 @@ void setup(){
   size(1200, 800, P3D);
   separatorX = width / 2;
   dimensionToggleButton = initButton("2D", 60, 40, 80, 40);
+  xPos = width / 2;
+  yPos = 0;
 }
 
 
@@ -29,7 +32,8 @@ void draw(){
     drawMiddle();
     drawLine();
   }else if (state == State.P3D && object3D != null){
-    translate(width / 2, 0);
+    println(xPos);
+    translate(xPos, yPos);
     shape(object3D);
   }
 }
@@ -120,6 +124,13 @@ void dimensionControl(){
     state = State.P2D; 
   }
   dimensionToggleButton.changeText(text);
+}
+
+void mouseDragged(){
+  if (state == State.P3D){
+    xPos = mouseX;
+    yPos = mouseY - height / 2;
+  }
 }
 
 void mouseMoved(){
