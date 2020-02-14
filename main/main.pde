@@ -8,7 +8,7 @@ enum State {
 }
 
 
-
+Button dimensionToggleButton;
 State state = State.P2D;
 List<PVector> points = new ArrayList();
 PShape object3D; 
@@ -17,7 +17,29 @@ int separatorX;
 void setup(){
   size(1200, 800, P3D);
   separatorX = width / 2;
+  dimensionToggleButton = initButton("2D", 60, 40, 80, 40);
 }
+
+
+void draw(){
+  background(0, 0, 0);
+  dimensionToggleButton.draw();
+  stroke(255, 255, 255);
+  if (state == State.P2D){
+    drawMiddle();
+    drawLine();
+  }else if (state == State.P3D && object3D != null){
+    translate(width / 2, 0);
+    shape(object3D);
+  }
+}
+
+Button initButton(String text, int x, int y, int w, int h){
+  Button button  = new Button(text, x, y, w, h);
+  button.changeFontSize(20);
+  return button;
+}
+
 
 void drawMiddle(){
   int gap = 10;
@@ -45,6 +67,7 @@ List<PVector> rotateLine(){
 
 
 void addVertex(List<PVector> rotated){
+  if (rotated.isEmpty()) return;
   object3D.vertex(rotated.get(0).x, rotated.get(0).y, rotated.get(0).z);
   for (int i = 0; i < rotated.size() - 1; i++){
     object3D.vertex(points.get(i).x, points.get(i).y, points.get(i).z);
@@ -77,25 +100,28 @@ void drawLine(){
   }
 }
 
-void draw(){
-  background(0, 0, 0);
-  stroke(255, 255, 255);
-  if (state == State.P2D){
-    drawMiddle();
-    drawLine();
-  }else if (state == State.P3D){
-    translate(mouseX, mouseY - height / 2);
-    shape(object3D);
-  }
-}
-
 void mouseClicked(){
-  if (mouseButton == LEFT){
+  if (dimensionToggleButton.isMouseOver()){
+    dimensionControl();
+  }else if (mouseButton == LEFT){
     if (mouseX >= width / 2){
       points.add(new PVector(mouseX - separatorX, mouseY, 0));
     }
-  }else if (mouseButton == RIGHT){
-    makeShape(); 
-    state = State.P3D;
   }
+}
+
+void dimensionControl(){
+  String text = "2D";
+  if (state == State.P2D){
+    state = State.P3D;
+    text = "3D";
+    makeShape();
+  }else {
+    state = State.P2D; 
+  }
+  dimensionToggleButton.changeText(text);
+}
+
+void mouseMoved(){
+  dimensionToggleButton.mouseOver();
 }
