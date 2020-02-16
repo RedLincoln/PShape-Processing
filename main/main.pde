@@ -1,7 +1,7 @@
 import java.util.List;
 import java.util.ArrayList;
 
-double rotAngle = 30;
+double rotAngle = 10;
 
 enum State {
   P2D,
@@ -19,11 +19,11 @@ Button translateButton;
 Button rotateButton;
 Movement movement = Movement.translate;
 boolean rotateX = true;
-int optionTimes = 0;
 State state = State.P2D;
 float rotationRatio = 0.1;
 int xPos, yPos;
 List<PVector> points = new ArrayList();
+List<PVector> orig = new ArrayList();
 PShape object3D; 
 int separatorX;
 int separatorY;
@@ -41,10 +41,7 @@ void setup(){
   translateButton = initButton("Translate", 80, 100, 120, 40);
   translateButton.selected(true);
   rotateButton = initButton("Rotate-X", 220, 100, 120, 40);
-  xPos = width / 2;
-  yPos = height / 2;
 }
-
 
 void draw(){
   background(backgroundColor);
@@ -64,7 +61,7 @@ void draw(){
 
 
 boolean haveFigure(){
-  return points != null && !points.isEmpty();
+  return orig != null && !orig.isEmpty();
 }
 
 Button initButton(String text, int x, int y, int w, int h){
@@ -110,33 +107,57 @@ void addVertex(List<PVector> rotated){
   object3D.vertex(v.x, v.y, v.z);
 } 
 
+int getMidPoint(){
+  float lower = orig.get(0).y;
+  float higher = orig.get(0).y;
+  for (PVector point: orig){
+    if (point.y < lower){
+      lower = point.y;
+    }else if (point.y > higher){
+      higher = point.y;
+    }
+  }
+  return int((higher + lower) / 2);
+}
+
+void setMirrorFigure(){
+  points.clear();
+  int midPoint = getMidPoint();
+  int diference = height / 2 - midPoint;
+  println(midPoint, diference);
+  for (PVector point : orig){
+    points.add(new PVector(point.x, point.y - separatorY + diference, point.z));
+  }
+}
 
 void makeShape(){
+  xPos = width / 2;
+  yPos = height / 2;
+  setMirrorFigure();
   object3D = createShape();
   object3D.beginShape(TRIANGLE_STRIP);
   object3D.stroke(255, 0, 0);
   double angle = 0;
-  while (angle < 360){
+  while (angle <= 360){
     List<PVector> rotated = rotateLine();
     addVertex(rotated);
     points = rotated;
     angle += rotAngle;
   }
   object3D.endShape();
+  println(object3D.width, object3D.height);
   
 }
 
 void drawLine(){
   if (!haveFigure()) return;  
   strokeWeight(3);
-  point(separatorX + points.get(0).x, separatorY + points.get(0).y, 0);
-  for(int i = 0; i < points.size() - 1; i++){    
-    line(separatorX + points.get(i).x, separatorY + points.get(i).y, separatorX + points.get(i + 1).x, separatorY + points.get(i + 1).y);
+  point(separatorX + orig.get(0).x, orig.get(0).y, 0);
+  for(int i = 0; i < orig.size() - 1; i++){    
+    line(separatorX + orig.get(i).x, orig.get(i).y, separatorX + orig.get(i + 1).x,orig.get(i + 1).y);
   }
   strokeWeight(1);
 }
-
-
 
 
 void mouseClicked(){
@@ -145,7 +166,7 @@ void mouseClicked(){
       dimensionControl();
     }
   }else if (state == State.P2D && clearButton.isMouseOver()){
-    points.clear();
+    orig.clear();
   }else if (state == State.P3D){
     if(translateButton.isMouseOver()){
       translateButton.selected(true);
@@ -154,14 +175,13 @@ void mouseClicked(){
     }else if (rotateButton.isMouseOver()){
       translateButton.selected(false);
       rotateControl();
-    }
-    if (movement == Movement.rotate){
+    }else if (movement == Movement.rotate){
       startX = mouseX;
       startY = mouseY;
     }
   }else if (mouseButton == LEFT){
     if (mouseX >= width / 2){
-      points.add(new PVector(mouseX - separatorX, mouseY - separatorY, 0));
+      orig.add(new PVector(mouseX - separatorX, mouseY, 0));
     }
   }
 }
@@ -193,7 +213,9 @@ void dimensionControl(){
 }
 
 void mouseDragged(){
-  if (state == State.P3D){
+  if (state == State.P3D &&
+      !translateButton.isMouseOver() &&
+      !rotateButton.isMouseOver()){
     if (movement == Movement.translate){
       xPos = mouseX;
       yPos = mouseY;
