@@ -187,17 +187,17 @@ void keyPressedRotate(){
 }
 
 void keyPressed(){
-  if (state == State.P3D ){
-      keyPressedTranslate();
-      keyPressedRotate();
+  if (key == ' '){
+    dimensionControl();
+  }else if (state == State.P3D ){
+    keyPressedTranslate();
+    keyPressedRotate();
   }
 }
 
 void mouseClicked(){
   if (dimensionToggleButton.isMouseOver()){
-    if (haveFigure()){
       dimensionControl();
-    }
   }else if (state == State.P2D && clearButton.isMouseOver()){
     orig.clear();
     object3D = null;
@@ -237,6 +237,7 @@ void rotateControl(){
 }
 
 void dimensionControl(){
+  if (!haveFigure()) return;
   String text = "3D";
   if (state == State.P2D){
     state = State.P3D;
