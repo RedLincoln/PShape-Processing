@@ -42,6 +42,7 @@ void setup(){
   translateButton = initButton("Translate", 80, 100, 120, 40);
   translateButton.selected(true);
   rotateButton = initButton("Rotate-X", 220, 100, 120, 40);
+  setInitPos();
 }
 
 void draw(){
@@ -58,6 +59,11 @@ void draw(){
     translate(xPos, yPos);      
     shape(object3D);
   }
+}
+
+void setInitPos(){
+  xPos = width / 2;
+  yPos = height / 2;
 }
 
 
@@ -125,15 +131,13 @@ void setMirrorFigure(){
   points.clear();
   int midPoint = getMidPoint();
   int diference = height / 2 - midPoint;
-  println(midPoint, diference);
   for (PVector point : orig){
     points.add(new PVector(point.x, point.y - separatorY + diference, point.z));
   }
 }
 
 void makeShape(){
-  xPos = width / 2;
-  yPos = height / 2;
+  if (object3D != null) return;
   setMirrorFigure();
   object3D = createShape();
   object3D.beginShape(TRIANGLE_STRIP);
@@ -146,8 +150,6 @@ void makeShape(){
     angle += rotAngle;
   }
   object3D.endShape();
-  println(object3D.width, object3D.height);
-  
 }
 
 void drawLine(){
@@ -198,6 +200,8 @@ void mouseClicked(){
     }
   }else if (state == State.P2D && clearButton.isMouseOver()){
     orig.clear();
+    object3D = null;
+    setInitPos();
   }else if (state == State.P3D){
     if(translateButton.isMouseOver()){
       translateButton.selected(true);
