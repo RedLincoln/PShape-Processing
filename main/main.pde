@@ -264,9 +264,9 @@ void mouseDragged(){
         }
       }else{
         if (mouseY < startY){
-          object3D.rotateX(-rotationRatio);      
+          object3D.rotateX(rotationRatio);      
         }else if(mouseY > startY){
-          object3D.rotateX(rotationRatio);
+          object3D.rotateX(-rotationRatio);
         }
       }
       startX = mouseX;
