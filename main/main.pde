@@ -13,6 +13,8 @@ enum Movement {
   rotate;
 }
 
+String errorMessage = "You need to draw something first";
+boolean error = false;
 Button dimensionToggleButton;
 Button clearButton;
 Button translateButton;
@@ -50,6 +52,9 @@ void draw(){
   dimensionToggleButton.draw();
   stroke(255, 255, 255);
   if (state == State.P2D){
+    if (error){
+      text(errorMessage, width / 2, 40);
+    }
     clearButton.draw();
     drawMiddle();
     drawLine();
@@ -237,7 +242,11 @@ void rotateControl(){
 }
 
 void dimensionControl(){
-  if (!haveFigure()) return;
+  if (!haveFigure()){
+    error = true;
+    return;
+  }
+  error = false;
   String text = "3D";
   if (state == State.P2D){
     state = State.P3D;
