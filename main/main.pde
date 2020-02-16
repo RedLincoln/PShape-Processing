@@ -31,12 +31,13 @@ int foregroundColor = #ffffff;
 int backgroundColor = #000000;
 int startX = 0;
 int startY = 0;
+int step = 15;
 
 void setup(){
   size(1200, 800, P3D);
   separatorX = width / 2;
   separatorY = height / 2;
-  dimensionToggleButton = initButton("2D", 60, 40, 80, 40);
+  dimensionToggleButton = initButton("3D", 60, 40, 80, 40);
   clearButton = initButton("Clear", 160, 40, 80, 40);
   translateButton = initButton("Translate", 80, 100, 120, 40);
   translateButton.selected(true);
@@ -159,6 +160,36 @@ void drawLine(){
   strokeWeight(1);
 }
 
+void keyPressedTranslate(){
+  if (keyCode == UP){
+    yPos -= yPos > step ? step : 0;           
+  }else if(keyCode == DOWN){
+    yPos += yPos < height - step ? step : 0;  
+  }else if(keyCode == LEFT){
+    xPos -= xPos > step ? step : 0;  
+  }else if(keyCode == RIGHT){
+    xPos += xPos < width - step ? step : 0;  
+  }
+}
+
+void keyPressedRotate(){
+  if (key == 'w'){
+    object3D.rotateX(rotationRatio);           
+  }else if(key == 's'){
+    object3D.rotateX(-rotationRatio);  
+  }else if(key == 'a'){
+    object3D.rotateY(rotationRatio);  
+  }else if(key == 'd'){
+    object3D.rotateY(-rotationRatio);  
+  }
+}
+
+void keyPressed(){
+  if (state == State.P3D ){
+      keyPressedTranslate();
+      keyPressedRotate();
+  }
+}
 
 void mouseClicked(){
   if (dimensionToggleButton.isMouseOver()){
@@ -201,10 +232,10 @@ void rotateControl(){
 }
 
 void dimensionControl(){
-  String text = "2D";
+  String text = "3D";
   if (state == State.P2D){
     state = State.P3D;
-    text = "3D";
+    text = "2D";
     makeShape();
   }else {
     state = State.P2D; 
