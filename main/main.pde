@@ -216,6 +216,7 @@ void mouseClicked(){
     }
   }else if (mouseButton == LEFT){
     if (mouseX >= width / 2){
+      object3D = null;
       orig.add(new PVector(mouseX - separatorX, mouseY, 0));
     }
   }
