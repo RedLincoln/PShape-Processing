@@ -31,7 +31,7 @@ boolean wFlag, sFlag, aFlag, dFlag, upFlag, downFlag, leftFlag, rightFlag;
 boolean rotateX = true;
 State state = State.info;
 State oldState = State.P2D;
-float rotationRatio = 0.1;
+float rotationRatio = 0.05;
 int xPos, yPos;
 List<PVector> points = new ArrayList();
 List<PVector> orig = new ArrayList();
