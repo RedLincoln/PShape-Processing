@@ -5,7 +5,7 @@ Mi nombre es Miguel Lincoln Capote Pratts
 
  Palmas de Gran Canarias y tengo interés en el desarrollo web y la inteligencia artificial.
 
-![](peekgif.gif)
+![](peekgif)
 
 ## Desarrollo
 
