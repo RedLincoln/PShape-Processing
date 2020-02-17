@@ -19,6 +19,7 @@ String errorMessage = "You need to draw something first";
 String whatItDoesMessage = "This App uses the surface of revolution to create a 3D shape from a 2D line made with dots.";
 String pauseMessage = "Press \"P\" to enter or exit this menu";
 String dimensionMessage = "Press SPACEBAR to toggle between 2D and 3D";
+String clearMessage = "Press \"C\" to clear";
 boolean error = false;
 Button dimensionToggleButton;
 Button clearButton;
@@ -92,22 +93,23 @@ void infoView(){
   text(title, width / 2, 50);
   text("Controls", width / 2, 160);
   textSize(25);
-  text("Rotation", width / 2, 280);
-  text("Translate", width / 2, 510);
-  text("Hope it's helpfull!!!!", width / 2, 730);
+  text("Rotation", width / 2, 290);
+  text("Translate", width / 2, 520);
+  text("Hope it's helpfull!!!!", width / 2, 740);
   fill(foregroundColor);
   textSize(22);
   text(whatItDoesMessage, width / 2, 100);
   text(pauseMessage, width / 2, 190);
   text(dimensionMessage, width / 2, 220);
-  text("W key to rotate UP", width / 2, 320);
-  text("S key to rotate DOWN", width / 2, 360);
-  text("A key to rotate LEFT", width / 2, 400);
-  text("D key to rotate RIGHT", width / 2, 440);
-  text("UP_ARROW key to translate UP", width / 2, 550);
-  text("DOWN_ARROW key to translate DOWN", width / 2, 590);
-  text("LEFT_ARROW key to translate LEFT", width / 2, 630);
-  text("RIGHT_ARROW key to translate RIGHT", width / 2, 670);
+  text(clearMessage, width / 2, 250);
+  text("W key to rotate UP", width / 2, 330);
+  text("S key to rotate DOWN", width / 2, 370);
+  text("A key to rotate LEFT", width / 2, 410);
+  text("D key to rotate RIGHT", width / 2, 450);
+  text("UP_ARROW key to translate UP", width / 2, 560);
+  text("DOWN_ARROW key to translate DOWN", width / 2, 600);
+  text("LEFT_ARROW key to translate LEFT", width / 2, 640);
+  text("RIGHT_ARROW key to translate RIGHT", width / 2, 680);
   int gap = 5;
   int lineWidth = 10;
   int x = gap * 2;
@@ -254,19 +256,27 @@ void keyPressed(){
   }else if (state == State.P3D ){
     keyPressedTranslate();
     keyPressedRotate();
+  }else if(state == State.P2D && key == 'c'){
+    clear();
   }
 }
+
+
+void clear(){
+  orig.clear();
+  object3D = null;
+  setInitPos();
+}
+
 
 void mouseClicked(){
   if (infoButton.isMouseOver() && state != State.info){
     oldState = state;
     state = State.info;
   }else if (dimensionToggleButton.isMouseOver()){
-      dimensionControl();
+    dimensionControl();
   }else if (state == State.P2D && clearButton.isMouseOver()){
-    orig.clear();
-    object3D = null;
-    setInitPos();
+    clear();
   }else if (state == State.P3D){
     if(translateButton.isMouseOver()){
       translateButton.selected(true);
