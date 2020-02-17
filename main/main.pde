@@ -27,6 +27,7 @@ Button translateButton;
 Button rotateButton;
 Button infoButton;
 Movement movement = Movement.translate;
+boolean wFlag, sFlag, aFlag, dFlag, upFlag, downFlag, leftFlag, rightFlag;
 boolean rotateX = true;
 State state = State.info;
 State oldState = State.P2D;
@@ -73,6 +74,7 @@ void draw(){
     drawMiddle();
     drawLine();
   }else if (state == State.P3D){
+    movementMonitor();
     translateButton.draw();
     rotateButton.draw();
     translate(xPos, yPos);      
@@ -221,27 +223,54 @@ void drawLine(){
   strokeWeight(1);
 }
 
+void movementMonitor(){
+  if (upFlag){
+    yPos -= yPos > step ? step : 0;
+  }
+  if (downFlag){
+    yPos += yPos < height - step ? step : 0;
+  }
+  if (leftFlag){
+    xPos -= xPos > step ? step : 0;
+  }
+  if (rightFlag){
+    xPos += xPos < width - step ? step : 0;
+  }
+  if (wFlag){
+    object3D.rotateX(rotationRatio);
+  }
+  if(sFlag){
+    object3D.rotateX(-rotationRatio);
+  }
+  if (aFlag){
+    object3D.rotateY(rotationRatio);
+  }
+  if (dFlag){
+    object3D.rotateY(-rotationRatio);
+  }
+}
+
 void keyPressedTranslate(){
   if (keyCode == UP){
-    yPos -= yPos > step ? step : 0;           
+    upFlag = true;
   }else if(keyCode == DOWN){
-    yPos += yPos < height - step ? step : 0;  
+    downFlag = true;
   }else if(keyCode == LEFT){
-    xPos -= xPos > step ? step : 0;  
+    leftFlag = true;
   }else if(keyCode == RIGHT){
-    xPos += xPos < width - step ? step : 0;  
+    rightFlag = true;
   }
 }
 
 void keyPressedRotate(){
   if (key == 'w'){
-    object3D.rotateX(rotationRatio);           
+    wFlag = true;             
   }else if(key == 's'){
-    object3D.rotateX(-rotationRatio);  
+    sFlag = true;      
   }else if(key == 'a'){
-    object3D.rotateY(rotationRatio);  
+    aFlag = true;      
   }else if(key == 'd'){
-    object3D.rotateY(-rotationRatio);  
+    dFlag = true;      
   }
 }
 
@@ -361,4 +390,25 @@ void mouseMoved(){
   translateButton.mouseOver();
   rotateButton.mouseOver();
   infoButton.mouseOver();
+}
+
+void keyReleased(){
+  if (keyCode == UP){
+    upFlag = false;           
+  }else if(keyCode == DOWN){
+    downFlag = false;  
+  }else if(keyCode == LEFT){
+    leftFlag = false;  
+  }else if(keyCode == RIGHT){
+    rightFlag = false;  
+  }else
+  if (key == 'w'){
+    wFlag = false;           
+  }else if(key == 's'){
+    sFlag = false;  
+  }else if(key == 'a'){
+    aFlag = false;  
+  }else if(key == 'd'){
+    dFlag = false;  
+  }
 }
