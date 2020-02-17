@@ -5,7 +5,8 @@ double rotAngle = 10;
 
 enum State {
   P2D,
-  P3D;
+  P3D,
+  info;
 }
 
 enum Movement {
@@ -13,15 +14,21 @@ enum Movement {
   rotate;
 }
 
+String title = "PShape Revolution";
 String errorMessage = "You need to draw something first";
+String whatItDoesMessage = "This App uses the surface of revolution to create a 3D shape from a 2D line made with dots.";
+String pauseMessage = "Press \"P\" to enter or exit this menu";
+String dimensionMessage = "Press SPACEBAR to toggle between 2D and 3D";
 boolean error = false;
 Button dimensionToggleButton;
 Button clearButton;
 Button translateButton;
 Button rotateButton;
+Button infoButton;
 Movement movement = Movement.translate;
 boolean rotateX = true;
-State state = State.P2D;
+State state = State.info;
+State oldState = State.P2D;
 float rotationRatio = 0.1;
 int xPos, yPos;
 List<PVector> points = new ArrayList();
@@ -44,16 +51,22 @@ void setup(){
   translateButton = initButton("Translate", 80, 100, 120, 40);
   translateButton.selected(true);
   rotateButton = initButton("Rotate-X", 220, 100, 120, 40);
+  infoButton = initButton("?", width  - 40, 40, 40, 40);
   setInitPos();
 }
 
 void draw(){
   background(backgroundColor);
-  dimensionToggleButton.draw();
+  if (state != State.info){
+    dimensionToggleButton.draw();
+    infoButton.draw();
+  }
   stroke(255, 255, 255);
-  if (state == State.P2D){
+  if (state == State.info){
+    infoView();
+  }else if (state == State.P2D){
     if (error){
-      text(errorMessage, width / 2, 40);
+      text(errorMessage, width / 2, 40 );
     }
     clearButton.draw();
     drawMiddle();
@@ -63,6 +76,45 @@ void draw(){
     rotateButton.draw();
     translate(xPos, yPos);      
     shape(object3D);
+  }
+}
+
+void infoView(){
+  rectMode(CENTER);
+  fill(backgroundColor);
+  stroke(foregroundColor);
+  strokeWeight(4);
+  rect(width / 2, height / 2, width  - 8, height - 8);
+  fill(foregroundColor);
+  textAlign(CENTER);
+  textSize(30);
+  fill(0, 255, 0);
+  text(title, width / 2, 50);
+  text("Controls", width / 2, 160);
+  textSize(25);
+  text("Rotation", width / 2, 280);
+  text("Translate", width / 2, 510);
+  text("Hope it's helpfull!!!!", width / 2, 730);
+  fill(foregroundColor);
+  textSize(22);
+  text(whatItDoesMessage, width / 2, 100);
+  text(pauseMessage, width / 2, 190);
+  text(dimensionMessage, width / 2, 220);
+  text("W key to rotate UP", width / 2, 320);
+  text("S key to rotate DOWN", width / 2, 360);
+  text("A key to rotate LEFT", width / 2, 400);
+  text("D key to rotate RIGHT", width / 2, 440);
+  text("UP_ARROW key to translate UP", width / 2, 550);
+  text("DOWN_ARROW key to translate DOWN", width / 2, 590);
+  text("LEFT_ARROW key to translate LEFT", width / 2, 630);
+  text("RIGHT_ARROW key to translate RIGHT", width / 2, 670);
+  int gap = 5;
+  int lineWidth = 10;
+  int x = gap * 2;
+  int y = 120;
+  while (x < width  - gap  * 2){
+    line(x, y, x + lineWidth, y);
+    x += (gap + lineWidth);
   }
 }
 
@@ -192,7 +244,12 @@ void keyPressedRotate(){
 }
 
 void keyPressed(){
-  if (key == ' '){
+  if (key == 'p' && state != State.info){
+    oldState = state;
+    state = State.info;
+  }else if (key == 'p' && state == State.info){
+    state = oldState;
+  }else if (key == ' '){
     dimensionControl();
   }else if (state == State.P3D ){
     keyPressedTranslate();
@@ -201,7 +258,10 @@ void keyPressed(){
 }
 
 void mouseClicked(){
-  if (dimensionToggleButton.isMouseOver()){
+  if (infoButton.isMouseOver() && state != State.info){
+    oldState = state;
+    state = State.info;
+  }else if (dimensionToggleButton.isMouseOver()){
       dimensionControl();
   }else if (state == State.P2D && clearButton.isMouseOver()){
     orig.clear();
@@ -290,4 +350,5 @@ void mouseMoved(){
   clearButton.mouseOver();
   translateButton.mouseOver();
   rotateButton.mouseOver();
+  infoButton.mouseOver();
 }

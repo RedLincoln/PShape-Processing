@@ -29,6 +29,7 @@ class Button {
   public void draw(){
     fill(background, alpha);
     rectMode(CENTER);
+    strokeWeight(1);
     rect(x, y, w, h, 7);
     fill(foreground, alpha);
     textSize(fontSize);
