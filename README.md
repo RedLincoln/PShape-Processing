@@ -3,7 +3,7 @@
 Mi nombre es Miguel Lincoln Capote Pratts
 , estudiante de la Universidad de las Las
 
- Palmas de Gran Canarias y tengo interés en el desarrollo web y la inteligencia artificial.
+ Palmas de Gran Canaria y tengo interés en el desarrollo web y la inteligencia artificial.
 
 ![](peekgif)
 
